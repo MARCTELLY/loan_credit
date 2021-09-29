@@ -9,7 +9,7 @@ class Error(Exception):
 
 class SelectorError(Error):
     """
-    Cette erreur se déclanche lorsque la méthode choisie est incorrecte
+    This raise error for selector
     """
 
     def __init__(self, msg):
@@ -18,7 +18,16 @@ class SelectorError(Error):
 
 class QueryError(Error):
     """
-    Erreur de requette
+    This handle error for query
+    """
+
+    def __int__(self, msg):
+        self.msg = msg
+
+
+class SomeError(Error):
+    """
+    This handle error for query
     """
 
     def __int__(self, msg):
@@ -80,3 +89,28 @@ def selection_variable(X: 'pd.DataFrame', Y: 'pd.Series', selector: str = "Selec
 
     else:
         raise SelectorError("There is some error with your selector")
+
+
+def transform_categorical(df: 'pd.DataFrame') -> 'pd.DataFrame':
+    """
+    This function tranform object data to integer
+    """
+    return df.apply(lambda x: pd.factorize(x)[0])
+
+
+def numeric_fillna(df: 'pd.DataFrame', method: str, value=None):
+
+    try:
+        if method is None:
+            return df.apply(lambda x: x.fillna(x.method()))
+        else:
+            return df.apply(lambda x: x.fillna(value))
+    except:
+        raise SomeError("there are error in with function argurment")
+
+
+def category_fillna(df: 'pd.DataFrame') -> 'pd.DataFrame':
+    """
+    Fill nan value with median in categorical data
+    """
+    return df.apply(lambda x: x.fillna(x.median()))
