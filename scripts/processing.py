@@ -38,7 +38,8 @@ def get_na_percentage(df: 'pd.DataFrame') -> 'pd.Series':
     """
     this function return percentage of na in each columns
     """
-    return df.isna().sum().apply(lambda x: x*100/df.shape[1])
+    print(df.shape)
+    return df.isna().sum().apply(lambda x: x*100/df.shape[0])
 
 
 def select_column(df: 'pd.DataFrame', na_threshold: int = 50) -> 'pd.DataFrame':
