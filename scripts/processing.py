@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from sklearn.feature_selection import f_classif, SelectFwe
+from sklearn.feature_selection import f_classif, chi2, SelectFwe, SelectKBest
 
 
 class Error(Exception):
@@ -38,7 +38,6 @@ def get_na_percentage(df: 'pd.DataFrame') -> 'pd.Series':
     """
     this function return percentage of na in each columns
     """
-    print(df.shape)
     return df.isna().sum().apply(lambda x: x*100/df.shape[0])
 
 
@@ -46,7 +45,7 @@ def select_column(df: 'pd.DataFrame', na_threshold: int = 50) -> 'pd.DataFrame':
     """
     select in dataframe column with an threshold of NAN values
     """
-    return df[get_na_percentage(df).index[get_na_percentage(df).index <= na_threshold]]
+    return df[get_na_percentage(df)[get_na_percentage(df) <= na_threshold].index]
 
 
 def split_dataframe_by_dtype(df: 'pd.DataFrame') -> list:
@@ -74,17 +73,17 @@ def transform_y(df: 'pd.Series') -> 'pd.Series':
 
 
 def selection_variable(X: 'pd.DataFrame', Y: 'pd.Series', selector: str = "SelectFwe",
-                       stat_test: str = 'f_classif', alpha: float = 0.001, k: int = 20) -> 'pd.DataFrame':
+                       stat_test: str = f_classif, alpha: float = 0.001, k: int = 20) -> 'pd.DataFrame':
     """
     This function select best variable based on some scoring 
     """
     select = None
     if selector == "SelectFwe" and stat_test is not None:
-        select = selector(stat_test, alpha=alpha)
+        select = SelectFwe(stat_test, alpha=alpha)
         res = select.fit_transform(X, Y)
         return f"{alpha} : alpha", X[X.columns[select.get_support()]]
     elif selector == "SelectKBest" and stat_test is not None:
-        select = selector(stat_test, k=k)
+        select = SelectKBest(stat_test, k=k)
         res = select.fit_transform(X, Y)
         return f"k : {k}", X[X.columns[select.get_support()]]
 
